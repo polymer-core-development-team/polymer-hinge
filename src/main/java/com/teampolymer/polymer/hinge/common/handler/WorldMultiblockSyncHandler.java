@@ -23,10 +23,12 @@ public class WorldMultiblockSyncHandler {
         Collection<? extends IAssembledMultiblock> multiblocks = PolymerCoreApi.getInstance()
             .getWorldMultiblockManager()
             .findByChunks(event.getWorld(), event.getPos());
-        PolymerHingeNetworking.INSTANCE.send(
-            PacketDistributor.TRACKING_CHUNK.with(() -> event.getWorld().getChunk(event.getPos().x, event.getPos().z)),
-            new PacketSyncWorldMultiblock(multiblocks)
-        );
+        if (multiblocks.size() > 0) {
+            PolymerHingeNetworking.INSTANCE.send(
+                PacketDistributor.TRACKING_CHUNK.with(() -> event.getWorld().getChunk(event.getPos().x, event.getPos().z)),
+                new PacketSyncWorldMultiblock(multiblocks)
+            );
+        }
     }
 
     @SubscribeEvent
