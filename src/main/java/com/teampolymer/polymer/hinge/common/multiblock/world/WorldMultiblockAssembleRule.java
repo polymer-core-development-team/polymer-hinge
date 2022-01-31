@@ -1,6 +1,6 @@
-package com.teampolymer.polymer.hinge.common.multiblock.free;
+package com.teampolymer.polymer.hinge.common.multiblock.world;
 
-import com.teampolymer.polymer.core.api.multiblock.IDefinedMultiblock;
+import com.teampolymer.polymer.core.api.multiblock.IArchetypeMultiblock;
 import com.teampolymer.polymer.core.api.multiblock.MultiblockDirection;
 import com.teampolymer.polymer.core.api.multiblock.part.IMultiblockPart;
 import com.teampolymer.polymer.core.api.multiblock.part.IMultiblockUnit;
@@ -14,17 +14,17 @@ import net.minecraft.util.math.vector.Vector3i;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FreeMultiblockAssembleRule extends AbstractAssembleRule {
-    public FreeMultiblockAssembleRule(BlockPos offset, boolean isSymmetrical, Rotation rotation) {
+public class WorldMultiblockAssembleRule extends AbstractAssembleRule {
+    public WorldMultiblockAssembleRule(BlockPos offset, boolean isSymmetrical, Rotation rotation) {
         super(offset, isSymmetrical, rotation);
     }
 
-    public FreeMultiblockAssembleRule() {
+    public WorldMultiblockAssembleRule() {
 
     }
 
     @Override
-    public Map<BlockPos, IMultiblockUnit> mapParts(IDefinedMultiblock originalMultiblock) {
+    public Map<BlockPos, IMultiblockUnit> mapParts(IArchetypeMultiblock originalMultiblock) {
         Map<Vector3i, IMultiblockPart> parts = originalMultiblock.getParts();
         Map<BlockPos, IMultiblockUnit> results = new HashMap<>();
         MultiblockDirection direction = MultiblockDirection.get(getRotation(), isSymmetrical());

@@ -1,13 +1,13 @@
 package com.teampolymer.polymer.hinge.common.multiblock.builder;
 
 import com.teampolymer.polymer.core.api.PolymerCoreApi;
+import com.teampolymer.polymer.core.api.multiblock.IArchetypeMultiblock;
 import com.teampolymer.polymer.hinge.api.exceptions.MultiblockBuilderException;
-import com.teampolymer.polymer.core.api.multiblock.IDefinedMultiblock;
 import com.teampolymer.polymer.core.api.multiblock.builder.IPartListMultiblockBuilder;
 import com.teampolymer.polymer.core.api.multiblock.part.IMultiblockPart;
 import com.teampolymer.polymer.core.api.multiblock.part.IPartLimitConfig;
-import com.teampolymer.polymer.core.api.manager.PolymerCoreRegistries;
-import com.teampolymer.polymer.hinge.common.multiblock.DefinedMultiblockImpl;
+import com.teampolymer.polymer.core.api.manager.PolymerRegistries;
+import com.teampolymer.polymer.hinge.common.multiblock.ArchetypeMultiblockImpl;
 import com.teampolymer.polymer.hinge.common.multiblock.ExtensibleMultiblockImpl;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3i;
@@ -20,13 +20,13 @@ public class DefaultPartListMultiblockBuilder extends AbstractMultiblockBuilder<
     private final Map<Vector3i, IMultiblockPart> parts = new HashMap<>();
 
     @Override
-    public IDefinedMultiblock build() {
+    public IArchetypeMultiblock build() {
         if (machine == null) {
             //TODO: Machine
 //            throw new MultiblockBuilderException("'Machine' can not be null");
         }
         if (type == null) {
-            type = PolymerCoreRegistries.MULTIBLOCK_TYPES.getValue(new ResourceLocation(PolymerCoreApi.MOD_ID, "type_free"));
+            type = PolymerRegistries.MULTIBLOCK_TYPES.getValue(new ResourceLocation(PolymerCoreApi.MOD_ID, "type_free"));
         }
         if (parts.get(Vector3i.ZERO) == null) {
             throw new MultiblockBuilderException("Could not find a multiblock core in the structure!");
@@ -62,7 +62,7 @@ public class DefaultPartListMultiblockBuilder extends AbstractMultiblockBuilder<
             );
         }
         //不可拓展的版本
-        return new DefinedMultiblockImpl(
+        return new ArchetypeMultiblockImpl(
             components,
             machine,
             size,

@@ -3,7 +3,7 @@ package com.teampolymer.polymer.hinge.common.chunk;
 import com.teampolymer.polymer.core.api.capability.IChunkMultiblockStorage;
 import com.teampolymer.polymer.core.api.multiblock.IAssembledMultiblock;
 import com.teampolymer.polymer.core.api.multiblock.part.IMultiblockUnit;
-import com.teampolymer.polymer.hinge.common.world.FreeMultiblockWorldSavedData;
+import com.teampolymer.polymer.hinge.common.world.WorldMultiblockSavedData;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -73,7 +73,7 @@ public class ChunkMultiblockStorage implements IChunkMultiblockStorage {
                     LOG.warn("Position: {} Trying to replace an existing machine part for machine '{}' to another machine '{}', this may be a mistake!",
                         entry.getKey(), replaced.getA(), multiblockId);
 
-                    IAssembledMultiblock duplicate = FreeMultiblockWorldSavedData.get(chunk.getLevel()).getAssembledMultiblock(multiblockId);
+                    IAssembledMultiblock duplicate = WorldMultiblockSavedData.get(chunk.getLevel()).getAssembledMultiblock(multiblockId);
                     if (duplicate != null) {
                         duplicate.disassemble(chunk.getLevel());
                     }
@@ -130,7 +130,7 @@ public class ChunkMultiblockStorage implements IChunkMultiblockStorage {
         this.data.clear();
         List<UUID> invalidateMultiblocks = new ArrayList<>();
         for (UUID uuid : this.multiblocks) {
-            IAssembledMultiblock multiblock = FreeMultiblockWorldSavedData.get(world).getAssembledMultiblock(uuid);
+            IAssembledMultiblock multiblock = WorldMultiblockSavedData.get(world).getAssembledMultiblock(uuid);
             if (multiblock == null) {
                 invalidateMultiblocks.add(uuid);
                 continue;

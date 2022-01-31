@@ -1,7 +1,7 @@
 package com.teampolymer.polymer.hinge.common.multiblock.builder;
 
 import com.google.gson.*;
-import com.teampolymer.polymer.core.api.multiblock.IDefinedMultiblock;
+import com.teampolymer.polymer.core.api.multiblock.IArchetypeMultiblock;
 import com.teampolymer.polymer.core.api.multiblock.builder.IBasicMultiblockBuilder;
 import com.teampolymer.polymer.core.api.multiblock.builder.ICharMarkedMultiblockBuilder;
 import com.teampolymer.polymer.core.api.multiblock.builder.IMultiblockBuilder;
@@ -227,7 +227,7 @@ public class JsonMultiblockBuilder implements IBasicMultiblockBuilder {
 
 
     @Override
-    public IDefinedMultiblock build() {
+    public IArchetypeMultiblock build() {
         /*
          * 序列化json
          */

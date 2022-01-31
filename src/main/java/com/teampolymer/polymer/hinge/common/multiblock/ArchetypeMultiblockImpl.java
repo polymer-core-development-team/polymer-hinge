@@ -2,7 +2,7 @@ package com.teampolymer.polymer.hinge.common.multiblock;
 
 import com.teampolymer.polymer.core.api.component.IMultiblockComponent;
 import com.teampolymer.polymer.core.api.multiblock.IAssembledMultiblock;
-import com.teampolymer.polymer.core.api.multiblock.IDefinedMultiblock;
+import com.teampolymer.polymer.core.api.multiblock.IArchetypeMultiblock;
 import com.teampolymer.polymer.core.api.multiblock.IMultiblockType;
 import com.teampolymer.polymer.core.api.multiblock.MultiblockDirection;
 import com.teampolymer.polymer.core.api.multiblock.assembled.IMultiblockAssembleRule;
@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class DefinedMultiblockImpl extends AbstractMultiblock implements IDefinedMultiblock {
+public class ArchetypeMultiblockImpl extends AbstractMultiblock implements IArchetypeMultiblock {
     private ResourceLocation registryName = null;
     private final Map<Vector3i, IMultiblockPart> partsMap;
     private final IMultiblockType type;
@@ -32,7 +32,7 @@ public class DefinedMultiblockImpl extends AbstractMultiblock implements IDefine
     private final List<String> tags;
     private final Collection<IPartLimitConfig> limitConfigs;
 
-    public DefinedMultiblockImpl(List<IMultiblockComponent> components, String machine, Vector3i size, Map<Vector3i, IMultiblockPart> partsMap, IMultiblockType type, boolean canSymmetrical, List<String> tags, Collection<IPartLimitConfig> limitConfigs) {
+    public ArchetypeMultiblockImpl(List<IMultiblockComponent> components, String machine, Vector3i size, Map<Vector3i, IMultiblockPart> partsMap, IMultiblockType type, boolean canSymmetrical, List<String> tags, Collection<IPartLimitConfig> limitConfigs) {
         super(components, machine, size);
         this.partsMap = partsMap;
         this.type = type;
@@ -142,7 +142,7 @@ public class DefinedMultiblockImpl extends AbstractMultiblock implements IDefine
     }
 
     @Override
-    public DefinedMultiblockImpl setRegistryName(ResourceLocation name) {
+    public ArchetypeMultiblockImpl setRegistryName(ResourceLocation name) {
         registryName = name;
         return this;
     }

@@ -1,7 +1,7 @@
 package com.teampolymer.polymer.hinge.common.handler;
 
 import com.teampolymer.polymer.core.api.PolymerCoreApi;
-import com.teampolymer.polymer.core.api.multiblock.IDefinedMultiblock;
+import com.teampolymer.polymer.core.api.multiblock.IArchetypeMultiblock;
 import com.teampolymer.polymer.core.common.multiblock.builder.JsonMultiblockBuilder;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IFutureReloadListener;
@@ -39,13 +39,13 @@ public class MultiblockReloadListener implements IFutureReloadListener {
         if (!Files.exists(MULTIBLOCK_DIR)) {
             Files.createDirectories(MULTIBLOCK_DIR);
         }
-        List<IDefinedMultiblock> multiblocks = new ArrayList<>();
+        List<IArchetypeMultiblock> multiblocks = new ArrayList<>();
         Files.walkFileTree(MULTIBLOCK_DIR, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 if (file.getFileName().toString().endsWith(".json")) {
                     try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
-                        IDefinedMultiblock multiblock = new JsonMultiblockBuilder(reader).build();
+                        IArchetypeMultiblock multiblock = new JsonMultiblockBuilder(reader).build();
                         multiblocks.add(multiblock);
                     }
 
@@ -54,8 +54,8 @@ public class MultiblockReloadListener implements IFutureReloadListener {
             }
         });
 
-        for (IDefinedMultiblock multiblock : multiblocks) {
-            PolymerCoreApi.getInstance().getMultiblockManager().register(multiblock);
+        for (IArchetypeMultiblock multiblock : multiblocks) {
+            PolymerCoreApi.getInstance().getArchetypeManager().register(multiblock);
         }
     }
 

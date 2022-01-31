@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class ExtensibleMultiblockImpl extends DefinedMultiblockImpl implements IExtensibleMultiblock {
+public class ExtensibleMultiblockImpl extends ArchetypeMultiblockImpl implements IExtensibleMultiblock {
     private final List<IMultiblockExtension> extensions;
 
     public ExtensibleMultiblockImpl(List<IMultiblockComponent> components, String machine, Vector3i size, Map<Vector3i, IMultiblockPart> partsMap, IMultiblockType type, boolean canSymmetrical, List<IMultiblockExtension> extensions, List<String> tags, Collection<IPartLimitConfig> limitConfigs) {

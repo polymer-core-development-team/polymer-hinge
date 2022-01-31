@@ -2,7 +2,7 @@ package com.teampolymer.polymer.hinge.common.world;
 
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.HashMultimap;
-import com.teampolymer.polymer.core.api.multiblock.assembled.IFreeMultiblock;
+import com.teampolymer.polymer.core.api.multiblock.assembled.IWorldMultiblock;
 import com.teampolymer.polymer.core.api.util.MultiblockUtils;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -16,44 +16,51 @@ import net.minecraft.world.storage.WorldSavedData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class FreeMultiblockWorldSavedData extends WorldSavedData {
+public class WorldMultiblockSavedData extends WorldSavedData {
     private static final Logger LOG = LogManager.getLogger();
     private static final String NAME = "polymer_core_multiblock";
     private final World world;
 
-    public FreeMultiblockWorldSavedData(World world) {
+    public WorldMultiblockSavedData(World world) {
         super(NAME);
         this.world = world;
         this.assembledMultiblockMap = new ConcurrentHashMap<>();
     }
 
-    private final ConcurrentHashMap<UUID, IFreeMultiblock> assembledMultiblockMap;
+    private final ConcurrentHashMap<UUID, IWorldMultiblock> assembledMultiblockMap;
     private final HashBiMap<UUID, BlockPos> positions = HashBiMap.create();
     private final HashMultimap<ChunkPos, UUID> chunksMultiblocks = HashMultimap.create();
 
-    public IFreeMultiblock getAssembledMultiblock(UUID multiblockId) {
+    public IWorldMultiblock getAssembledMultiblock(UUID multiblockId) {
         return assembledMultiblockMap.get(multiblockId);
     }
 
-    public IFreeMultiblock getAssembledMultiblock(BlockPos corePos) {
+    public IWorldMultiblock getAssembledMultiblock(BlockPos corePos) {
         return assembledMultiblockMap.get(positions.inverse().get(corePos));
     }
 
-    public Collection<IFreeMultiblock> getAssembledMultiblocks() {
+    public Collection<IWorldMultiblock> getAssembledMultiblocks() {
         return Collections.unmodifiableCollection(assembledMultiblockMap.values());
+    }
+
+    public Collection<IWorldMultiblock> getAssembledMultiblocks(ChunkPos... poses) {
+        ArrayList<IWorldMultiblock> result = new ArrayList<>();
+        for (ChunkPos pos : poses) {
+            for (UUID uuid : chunksMultiblocks.get(pos)) {
+                result.add(getAssembledMultiblock(uuid));
+            }
+        }
+        return result;
     }
 
     public void validateMultiblocksInChunk(ChunkPos pos, Set<UUID> multiblocks) {
 
         for (UUID uuid : chunksMultiblocks.get(pos)) {
             BlockPos corePos = positions.get(uuid);
-            IFreeMultiblock assembledMultiblock = getAssembledMultiblock(uuid);
+            IWorldMultiblock assembledMultiblock = getAssembledMultiblock(uuid);
             if (assembledMultiblock == null) {
                 LOG.error("Multiblock {} in {} has no entry, this should not happen!", uuid, corePos);
                 removeAssembledMultiblock(uuid);
@@ -61,8 +68,8 @@ public class FreeMultiblockWorldSavedData extends WorldSavedData {
                 LOG.error("Found invalidate multiblock {} in {}", uuid, corePos);
                 assembledMultiblock.disassemble(world);
             } else {
-                boolean invalid = assembledMultiblock.validate(world,false);
-                if(invalid) {
+                boolean invalid = assembledMultiblock.validate(world, false);
+                if (invalid) {
                     LOG.error("Found invalidate multiblock {} in {}", uuid, corePos);
                     assembledMultiblock.disassemble(world);
                 }
@@ -71,8 +78,8 @@ public class FreeMultiblockWorldSavedData extends WorldSavedData {
 
     }
 
-    public void addAssembledMultiblock(IFreeMultiblock multiblock) {
-        IFreeMultiblock result = assembledMultiblockMap.put(multiblock.getMultiblockId(), multiblock);
+    public void addAssembledMultiblock(IWorldMultiblock multiblock) {
+        IWorldMultiblock result = assembledMultiblockMap.put(multiblock.getMultiblockId(), multiblock);
         if (result != null) {
             LOG.error("Attempting to add an multiblock with existing id: {}", multiblock.getMultiblockId());
             result.disassemble(world);
@@ -82,7 +89,7 @@ public class FreeMultiblockWorldSavedData extends WorldSavedData {
             UUID uuid = positions.inverse().get(multiblock.getOffset());
             LOG.error("Attempting to add an multiblock {} to position {} where there are another multiblock {}",
                 multiblock.getMultiblockId(), multiblock.getOffset(), uuid);
-            IFreeMultiblock assembledMultiblock = getAssembledMultiblock(uuid);
+            IWorldMultiblock assembledMultiblock = getAssembledMultiblock(uuid);
             if (assembledMultiblock != null) {
                 assembledMultiblock.disassemble(world);
             }
@@ -96,7 +103,7 @@ public class FreeMultiblockWorldSavedData extends WorldSavedData {
     public void removeAssembledMultiblock(UUID multiblockId) {
         assembledMultiblockMap.remove(multiblockId);
         BlockPos remove = positions.remove(multiblockId);
-        if(remove != null) {
+        if (remove != null) {
             chunksMultiblocks.remove(new ChunkPos(remove), multiblockId);
         }
         setDirty();
@@ -107,7 +114,7 @@ public class FreeMultiblockWorldSavedData extends WorldSavedData {
         assembledMultiblockMap.clear();
         ListNBT multiblocks = nbt.getList("assembled_multiblocks", 10);
         for (INBT multiblock : multiblocks) {
-            IFreeMultiblock assembledMultiblock = (IFreeMultiblock) MultiblockUtils.deserializeNBT(world, multiblock);
+            IWorldMultiblock assembledMultiblock = (IWorldMultiblock) MultiblockUtils.deserializeNBT(world, multiblock);
             if (assembledMultiblock == null) {
                 continue;
             }
@@ -123,7 +130,7 @@ public class FreeMultiblockWorldSavedData extends WorldSavedData {
     @Override
     public CompoundNBT save(CompoundNBT compound) {
         ListNBT listNBT = new ListNBT();
-        for (IFreeMultiblock value : assembledMultiblockMap.values()) {
+        for (IWorldMultiblock value : assembledMultiblockMap.values()) {
             listNBT.add(value.serializeNBT());
         }
         compound.put("assembled_multiblocks", listNBT);
@@ -133,12 +140,12 @@ public class FreeMultiblockWorldSavedData extends WorldSavedData {
         return compound;
     }
 
-    public static FreeMultiblockWorldSavedData get(World worldIn) {
+    public static WorldMultiblockSavedData get(World worldIn) {
         if (!(worldIn instanceof ServerWorld)) {
             throw new RuntimeException("Attempted to get the data from a client world. This is wrong.");
         }
         ServerWorld world = (ServerWorld) worldIn;
         DimensionSavedDataManager storage = world.getDataStorage();
-        return storage.computeIfAbsent(() -> new FreeMultiblockWorldSavedData(world), NAME);
+        return storage.computeIfAbsent(() -> new WorldMultiblockSavedData(world), NAME);
     }
 }

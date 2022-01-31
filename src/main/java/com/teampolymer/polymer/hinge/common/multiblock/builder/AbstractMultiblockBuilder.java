@@ -1,11 +1,11 @@
 package com.teampolymer.polymer.hinge.common.multiblock.builder;
 
 import com.teampolymer.polymer.core.api.component.IMultiblockComponent;
+import com.teampolymer.polymer.core.api.manager.PolymerRegistries;
 import com.teampolymer.polymer.core.api.multiblock.IMultiblockType;
 import com.teampolymer.polymer.core.api.multiblock.builder.IMultiblockBuilder;
 import com.teampolymer.polymer.core.api.multiblock.extension.IMultiblockExtension;
 import com.teampolymer.polymer.core.api.multiblock.part.IPartLimitConfig;
-import com.teampolymer.polymer.core.api.manager.PolymerCoreRegistries;
 import com.teampolymer.polymer.hinge.common.multiblock.config.MutableLimitConfig;
 import net.minecraft.util.ResourceLocation;
 
@@ -65,7 +65,7 @@ public abstract class AbstractMultiblockBuilder<T extends IMultiblockBuilder<T>>
 
     @Override
     public T type(String type) {
-        IMultiblockType value = PolymerCoreRegistries.MULTIBLOCK_TYPES.getValue(new ResourceLocation(type));
+        IMultiblockType value = PolymerRegistries.MULTIBLOCK_TYPES.getValue(new ResourceLocation(type));
         type(value);
         return (T) this;
     }

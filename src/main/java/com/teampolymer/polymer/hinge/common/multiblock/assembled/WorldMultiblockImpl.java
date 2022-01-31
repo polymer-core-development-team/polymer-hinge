@@ -1,12 +1,12 @@
 package com.teampolymer.polymer.hinge.common.multiblock.assembled;
 
 import com.teampolymer.polymer.core.api.PolymerCoreApi;
-import com.teampolymer.polymer.core.api.multiblock.IDefinedMultiblock;
-import com.teampolymer.polymer.core.api.multiblock.assembled.IFreeMultiblock;
+import com.teampolymer.polymer.core.api.multiblock.IArchetypeMultiblock;
+import com.teampolymer.polymer.core.api.multiblock.assembled.IWorldMultiblock;
 import com.teampolymer.polymer.core.api.multiblock.assembled.IMultiblockAssembleRule;
 import com.teampolymer.polymer.core.api.multiblock.part.IMultiblockUnit;
 import com.teampolymer.polymer.hinge.common.chunk.CapabilityChunkMultiblockStorage;
-import com.teampolymer.polymer.hinge.common.world.FreeMultiblockWorldSavedData;
+import com.teampolymer.polymer.hinge.common.world.WorldMultiblockSavedData;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -20,11 +20,11 @@ import org.apache.logging.log4j.Logger;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class FreeMultiblockImpl implements IFreeMultiblock {
+public class WorldMultiblockImpl implements IWorldMultiblock {
     private static final Logger LOG = LogManager.getLogger();
     private UUID multiblockId;
     private IMultiblockAssembleRule assembleRule;
-    private IDefinedMultiblock definedMultiblock;
+    private IArchetypeMultiblock definedMultiblock;
     private Map<BlockPos, IMultiblockUnit> unitsMap;
     private Collection<ChunkPos> crossedChunks;
     private boolean initialized = false;
@@ -34,10 +34,10 @@ public class FreeMultiblockImpl implements IFreeMultiblock {
         return multiblockId;
     }
 
-    public FreeMultiblockImpl() {
+    public WorldMultiblockImpl() {
     }
 
-    public FreeMultiblockImpl(UUID multiblockId, IMultiblockAssembleRule assembleRule, IDefinedMultiblock definedMultiblock) {
+    public WorldMultiblockImpl(UUID multiblockId, IMultiblockAssembleRule assembleRule, IArchetypeMultiblock definedMultiblock) {
         this.multiblockId = multiblockId;
         this.assembleRule = assembleRule;
         this.definedMultiblock = definedMultiblock;
@@ -77,13 +77,13 @@ public class FreeMultiblockImpl implements IFreeMultiblock {
                     .ifPresent(it -> it.removeMultiblock(getMultiblockId()));
             }
         }
-        FreeMultiblockWorldSavedData.get(world).removeAssembledMultiblock(multiblockId);
+        WorldMultiblockSavedData.get(world).removeAssembledMultiblock(multiblockId);
         LOG.debug("The multiblock '{}' disassembled", multiblockId);
     }
 
 
     @Override
-    public IDefinedMultiblock getOriginalMultiblock() {
+    public IArchetypeMultiblock getOriginalMultiblock() {
         return definedMultiblock;
     }
 
@@ -161,7 +161,7 @@ public class FreeMultiblockImpl implements IFreeMultiblock {
     public void deserializeNBT(CompoundNBT nbt) {
         this.multiblockId = nbt.getUUID("uuid");
         String define = nbt.getString("define");
-        this.definedMultiblock = PolymerCoreApi.getInstance().getMultiblockManager().findById(new ResourceLocation(define))
+        this.definedMultiblock = PolymerCoreApi.getInstance().getArchetypeManager().findById(new ResourceLocation(define))
             .orElseThrow(() -> new IllegalStateException(String.format("Could not get multiblock %s from NBT", define)));
 
         this.assembleRule = this.definedMultiblock.getType().createRuleFromNBT(nbt.getCompound("rule"));
