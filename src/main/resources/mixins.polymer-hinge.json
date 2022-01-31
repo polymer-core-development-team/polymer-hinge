@@ -1,0 +1,8 @@
+{
+  "package": "com.teampolymer.polymer.hinge.mixin",
+  "mixins": [
+    "MixinChunk"
+  ],
+  "client": [],
+  "server": []
+}
