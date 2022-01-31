@@ -2,7 +2,7 @@ package com.teampolymer.polymer.hinge.common.handler;
 
 import com.teampolymer.polymer.core.api.PolymerCoreApi;
 import com.teampolymer.polymer.core.api.multiblock.IArchetypeMultiblock;
-import com.teampolymer.polymer.core.common.multiblock.builder.JsonMultiblockBuilder;
+import com.teampolymer.polymer.hinge.common.multiblock.builder.JsonMultiblockBuilder;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IFutureReloadListener;
 import net.minecraft.resources.IResourceManager;

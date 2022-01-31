@@ -1,7 +1,9 @@
 package com.teampolymer.polymer.hinge.common.network;
 
 import com.teampolymer.polymer.core.api.PolymerCoreApi;
+import net.minecraft.network.PacketDirection;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
@@ -25,6 +27,16 @@ public class PolymerHingeNetworking {
             (version) -> version.equals(VERSION)
         );
 
+        INSTANCE.messageBuilder(PacketSyncWorldMultiblock.class, nextID(), NetworkDirection.PLAY_TO_CLIENT)
+            .decoder(PacketSyncWorldMultiblock::new)
+            .encoder(PacketSyncWorldMultiblock::toBytes)
+            .consumer(PacketSyncWorldMultiblock::handler)
+            .add();
 
+        INSTANCE.messageBuilder(PacketRemoveWorldMultiblock.class, nextID(), NetworkDirection.PLAY_TO_CLIENT)
+            .decoder(PacketRemoveWorldMultiblock::new)
+            .encoder(PacketRemoveWorldMultiblock::toBytes)
+            .consumer(PacketRemoveWorldMultiblock::handler)
+            .add();
     }
 }

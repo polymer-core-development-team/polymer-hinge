@@ -65,7 +65,7 @@ public class WorldMultiblockImpl implements IWorldMultiblock {
             return true;
         }
         LOG.debug("Initializing multiblock {}", getMultiblockId());
-        Map<BlockPos, IMultiblockUnit> units = assembleRule.mapParts(getOriginalMultiblock());
+        Map<BlockPos, IMultiblockUnit> units = assembleRule.mapParts(getArchetype());
         if (units == null || units.isEmpty()) {
             return false;
         }
@@ -101,7 +101,7 @@ public class WorldMultiblockImpl implements IWorldMultiblock {
 
 
     @Override
-    public IArchetypeMultiblock getOriginalMultiblock() {
+    public IArchetypeMultiblock getArchetype() {
         return definedMultiblock;
     }
 

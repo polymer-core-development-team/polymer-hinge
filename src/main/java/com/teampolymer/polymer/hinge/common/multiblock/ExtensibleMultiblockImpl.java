@@ -41,7 +41,7 @@ public class ExtensibleMultiblockImpl extends ArchetypeMultiblockImpl implements
             return null;
         }
         List<Tuple<IMultiblockExtension, Integer>> extensions = findExtensionsFor(world, coreOffset, rotation, isSymmetrical);
-        return getType().createMultiblockIn(this, world, rule);
+        return getType().placeMultiblockIn(this, world, rule);
     }
 
 

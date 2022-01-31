@@ -37,6 +37,11 @@ public abstract class AbstractMultiblock implements IMultiblock {
     }
 
     @Override
+    public boolean isDistributedMachine() {
+        return false;
+    }
+
+    @Override
     public <T> void setAttribute(AttributeKey<T> key, T value) {
         attributeMap.setAttribute(key, value);
     }
@@ -45,4 +50,5 @@ public abstract class AbstractMultiblock implements IMultiblock {
     public <T> T getAttribute(AttributeKey<T> key) {
         return attributeMap.getAttribute(key);
     }
+
 }

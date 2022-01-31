@@ -24,29 +24,20 @@ public class MultiblockLoadRef {
         return result;
     }
 
-    public enum Status {
-        NOT_INITIALIZED,
-        LOADED,
-        UNLOADED,
-        PARTIAL_LOAD,
-        ERROR,
-        REMOVED,
-    }
-
-    public Status getStatus() {
+    public MultiblockLoadStatus getStatus() {
         if (total == 0) {
-            return Status.NOT_INITIALIZED;
+            return MultiblockLoadStatus.NOT_INITIALIZED;
         }
         if (total < 0) {
-            return Status.ERROR;
+            return MultiblockLoadStatus.ERROR;
         }
         if (ref == 0) {
-            return Status.UNLOADED;
+            return MultiblockLoadStatus.UNLOADED;
         }
         if (ref == total) {
-            return Status.LOADED;
+            return MultiblockLoadStatus.LOADED;
         }
-        return Status.PARTIAL_LOAD;
+        return MultiblockLoadStatus.PARTIAL_LOAD;
     }
 
     public int getRef() {

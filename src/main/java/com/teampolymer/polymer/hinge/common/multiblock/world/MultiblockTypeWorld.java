@@ -26,7 +26,7 @@ public class MultiblockTypeWorld extends ForgeRegistryEntry<IMultiblockType> imp
     private static final Logger LOG = LogManager.getLogger();
 
     @Override
-    public IAssembledMultiblock createMultiblockIn(IArchetypeMultiblock definition, World world, IMultiblockAssembleRule assembleRule) {
+    public IAssembledMultiblock placeMultiblockIn(IArchetypeMultiblock definition, World world, IMultiblockAssembleRule assembleRule) {
 
         if (world.isClientSide) {
             return null;
@@ -54,7 +54,7 @@ public class MultiblockTypeWorld extends ForgeRegistryEntry<IMultiblockType> imp
 
 
     @Override
-    public IAssembledMultiblock createFromNBT(World world, CompoundNBT nbt) {
+    public IAssembledMultiblock createFromNBT(CompoundNBT nbt) {
         //TODO: 拓展
         WorldMultiblockImpl multiblock = new WorldMultiblockImpl();
         try {

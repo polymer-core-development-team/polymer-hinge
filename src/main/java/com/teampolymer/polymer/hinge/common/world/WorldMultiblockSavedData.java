@@ -5,6 +5,7 @@ import com.google.common.collect.HashMultimap;
 import com.teampolymer.polymer.core.api.multiblock.assembled.IWorldMultiblock;
 import com.teampolymer.polymer.core.api.util.MultiblockUtils;
 import com.teampolymer.polymer.hinge.common.utils.MultiblockLoadRef;
+import com.teampolymer.polymer.hinge.common.utils.MultiblockLoadStatus;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
@@ -14,6 +15,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.DimensionSavedDataManager;
 import net.minecraft.world.storage.WorldSavedData;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,9 +33,10 @@ public class WorldMultiblockSavedData extends WorldSavedData {
     }
 
     private final HashMap<UUID, IWorldMultiblock> assembledMultiblockMap;
-    private final HashMap<UUID, MultiblockLoadRef> multiblockLoadRef = new HashMap<>();
     private final HashBiMap<UUID, BlockPos> positions = HashBiMap.create();
     private final HashMultimap<ChunkPos, UUID> chunksMultiblocks = HashMultimap.create();
+
+    private final HashMap<UUID, MultiblockLoadRef> multiblockLoadRef = new HashMap<>();
 
     public IWorldMultiblock getAssembledMultiblock(UUID multiblockId) {
         IWorldMultiblock result = assembledMultiblockMap.get(multiblockId);
@@ -102,7 +105,7 @@ public class WorldMultiblockSavedData extends WorldSavedData {
                 }
             } else {
                 if (assembledMultiblock.tryInitialize()) {
-                    boolean isValid = getMultiblockLoadRef(uuid).getStatus() != MultiblockLoadRef.Status.ERROR;
+                    boolean isValid = getMultiblockLoadRef(uuid).getStatus() != MultiblockLoadStatus.ERROR;
                     isValid = isValid && assembledMultiblock.validate(world, false);
                     if (!isValid) {
                         LOG.error("Found invalidate multiblock {} in {}", uuid, corePos);
@@ -123,10 +126,10 @@ public class WorldMultiblockSavedData extends WorldSavedData {
         return null;
     }
 
-    public MultiblockLoadRef.Status getMultiblockLoadStatus(UUID uuid) {
+    public MultiblockLoadStatus getMultiblockLoadStatus(UUID uuid) {
         MultiblockLoadRef ref = getMultiblockLoadRef(uuid);
         if (ref == null) {
-            return MultiblockLoadRef.Status.REMOVED;
+            return MultiblockLoadStatus.REMOVED;
         }
         return ref.getStatus();
     }
@@ -179,7 +182,7 @@ public class WorldMultiblockSavedData extends WorldSavedData {
         assembledMultiblockMap.clear();
         ListNBT multiblocks = nbt.getList("assembled_multiblocks", 10);
         for (INBT multiblock : multiblocks) {
-            IWorldMultiblock assembledMultiblock = (IWorldMultiblock) MultiblockUtils.deserializeNBT(world, multiblock);
+            IWorldMultiblock assembledMultiblock = (IWorldMultiblock) MultiblockUtils.deserializeNBT(multiblock);
             if (assembledMultiblock == null) {
                 continue;
             }

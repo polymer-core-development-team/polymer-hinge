@@ -50,7 +50,7 @@ public class ArchetypeMultiblockImpl extends AbstractMultiblock implements IArch
         if (!canAssemble(world, coreOffset, rotation, isSymmetrical, rule)) {
             return null;
         }
-        return getType().createMultiblockIn(this, world, rule);
+        return getType().placeMultiblockIn(this, world, rule);
     }
 
     @Nullable
