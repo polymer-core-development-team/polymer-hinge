@@ -31,11 +31,10 @@ logoFile="examplemod.png" #optional
 # A text field displayed in the mod UI
 credits="Thanks for this example mod goes to Java" #optional
 # A text field displayed in the mod UI
-authors="Love, Cheese and small house plants" #optional
+authors="TeamPolymer" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-No Desc
-'''
+多方块结构主要代码'''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.polymer-hinge]] #optional
     # the modid of the dependency
