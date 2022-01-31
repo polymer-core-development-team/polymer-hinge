@@ -1,6 +1,6 @@
 package com.teampolymer.polymer.hinge.mixin;
 
-import com.teampolymer.polymer.hinge.common.handler.FreeMultiblockUpdateHandler;
+import com.teampolymer.polymer.hinge.common.handler.WorldMultiblockUpdateHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -27,6 +27,6 @@ public abstract class MixinChunk {
         )
     )
     private void injectBlockRemove(BlockPos pos, BlockState newBlock, boolean flag, CallbackInfoReturnable<BlockState> cir) {
-        FreeMultiblockUpdateHandler.handleBlockChange(level, (Chunk)(Object)this, pos, newBlock);
+        WorldMultiblockUpdateHandler.handleBlockChange(level, (Chunk)(Object)this, pos, newBlock);
     }
 }

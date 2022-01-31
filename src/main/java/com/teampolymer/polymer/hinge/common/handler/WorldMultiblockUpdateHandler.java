@@ -3,11 +3,13 @@ package com.teampolymer.polymer.hinge.common.handler;
 import com.teampolymer.polymer.core.api.capability.IChunkMultiblockStorage;
 import com.teampolymer.polymer.core.api.multiblock.IAssembledMultiblock;
 import com.teampolymer.polymer.core.api.multiblock.part.IMultiblockUnit;
-import com.teampolymer.polymer.core.common.capability.chunk.CapabilityChunkMultiblockStorage;
-import com.teampolymer.polymer.core.common.capability.chunk.ChunkMultiblockCapabilityProvider;
-import com.teampolymer.polymer.core.common.world.FreeMultiblockWorldSavedData;
 import com.teampolymer.polymer.hinge.PolymerHinge;
+import com.teampolymer.polymer.hinge.common.chunk.CapabilityChunkMultiblockStorage;
+import com.teampolymer.polymer.hinge.common.chunk.ChunkMultiblockCapabilityProvider;
+import com.teampolymer.polymer.hinge.common.world.WorldMultiblockSavedData;
 import net.minecraft.block.BlockState;
+import net.minecraft.profiler.IProfiler;
+import net.minecraft.profiler.Profiler;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
@@ -27,19 +29,21 @@ import java.util.Set;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = PolymerHinge.MOD_ID)
-public class FreeMultiblockUpdateHandler {
+public class WorldMultiblockUpdateHandler {
     private static final Logger LOG = LogManager.getLogger();
 
     public static void handleBlockChange(World world, Chunk chunk, BlockPos pos, BlockState newBlock) {
         chunk.getCapability(CapabilityChunkMultiblockStorage.MULTIBLOCK_STORAGE).ifPresent(it -> {
+
+            IProfiler profiler = world.getProfiler();
+            profiler.push("checkMultiblock");
             Tuple<UUID, IMultiblockUnit> part = it.getMultiblockPart(pos);
             if (part == null) {
                 return;
             }
             boolean test = part.getB().test(newBlock);
             if (!test) {
-                //TODO: 这里可以继续优化一下性能
-                IAssembledMultiblock assembledMultiblock = FreeMultiblockWorldSavedData.get(world).getAssembledMultiblock(part.getA());
+                IAssembledMultiblock assembledMultiblock = WorldMultiblockSavedData.get(world).getAssembledMultiblock(part.getA());
                 if (assembledMultiblock == null) {
                     LOG.warn("The multiblock '{}' 's block in {} is invalid!", part.getA(), pos);
                     it.removeMultiblock(part.getA());
@@ -48,6 +52,7 @@ public class FreeMultiblockUpdateHandler {
                 //解除组装
                 assembledMultiblock.disassemble(world);
             }
+            profiler.pop();
         });
     }
 
@@ -65,20 +70,23 @@ public class FreeMultiblockUpdateHandler {
     @SubscribeEvent
     public static void onChunkLoad(ChunkEvent.Load load) {
         IChunk chunk = load.getChunk();
-        IWorld world = load.getWorld();
+        World world = (World) load.getWorld();
         if (world.isClientSide()) {
             return;
         }
+        IProfiler profiler = world.getProfiler();
+        profiler.push("initializeWorldMultiblock");
         Set<UUID> multiblocks = new HashSet<>();
         if (chunk instanceof ICapabilityProvider) {
             ((ICapabilityProvider) chunk).getCapability(CapabilityChunkMultiblockStorage.MULTIBLOCK_STORAGE)
                 .ifPresent(it -> {
-                    it.initialize((World) world);
+                    it.initialize(world);
                     multiblocks.addAll(it.getContainingMultiblocks());
                 });
         }
-        FreeMultiblockWorldSavedData.get((World) world).validateMultiblocksInChunk(chunk.getPos(), multiblocks);
-
+        profiler.popPush("validateMultiblocksInChunk");
+        WorldMultiblockSavedData.get(world).validateMultiblocksInChunk(chunk.getPos(), multiblocks);
+        profiler.pop();
     }
 
     @SubscribeEvent
