@@ -135,10 +135,6 @@ public class ChunkMultiblockStorage implements IChunkMultiblockStorage {
                 invalidateMultiblocks.add(uuid);
                 continue;
             }
-            if(!multiblock.initialize()){
-                invalidateMultiblocks.add(uuid);
-                continue;
-            }
             addMultiblockInternal(uuid, multiblock.getUnits());
         }
         if (LOG.isInfoEnabled() && multiblocks.size() > 0) {

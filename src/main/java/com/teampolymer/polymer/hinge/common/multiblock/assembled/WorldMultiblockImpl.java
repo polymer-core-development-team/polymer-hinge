@@ -45,10 +45,26 @@ public class WorldMultiblockImpl implements IWorldMultiblock {
     }
 
     @Override
-    public boolean initialize() {
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    @Override
+    public void invalidate() {
+        if (!initialized) {
+            return;
+        }
+        unitsMap = null;
+        crossedChunks = null;
+        initialized = false;
+    }
+
+    @Override
+    public boolean tryInitialize() {
         if (initialized) {
             return true;
         }
+        LOG.debug("Initializing multiblock {}", getMultiblockId());
         Map<BlockPos, IMultiblockUnit> units = assembleRule.mapParts(getOriginalMultiblock());
         if (units == null || units.isEmpty()) {
             return false;
@@ -71,11 +87,13 @@ public class WorldMultiblockImpl implements IWorldMultiblock {
 
     @Override
     public void disassemble(World world) {
-        if (initialize()) {
-            for (ChunkPos crossedChunk : getCrossedChunks()) {
-                world.getChunk(crossedChunk.x, crossedChunk.z).getCapability(CapabilityChunkMultiblockStorage.MULTIBLOCK_STORAGE)
-                    .ifPresent(it -> it.removeMultiblock(getMultiblockId()));
-            }
+        if (!initialized) {
+            LOG.error("The multiblock '{}' not initialized", multiblockId);
+            throw new IllegalStateException("Multiblock not initialized");
+        }
+        for (ChunkPos crossedChunk : getCrossedChunks()) {
+            world.getChunk(crossedChunk.x, crossedChunk.z).getCapability(CapabilityChunkMultiblockStorage.MULTIBLOCK_STORAGE)
+                .ifPresent(it -> it.removeMultiblock(getMultiblockId()));
         }
         WorldMultiblockSavedData.get(world).removeAssembledMultiblock(multiblockId);
         LOG.debug("The multiblock '{}' disassembled", multiblockId);
@@ -113,8 +131,9 @@ public class WorldMultiblockImpl implements IWorldMultiblock {
 
     @Override
     public boolean validate(World world, boolean disassemble) {
-        if (!initialize()) {
-            return false;
+        if (!initialized) {
+            LOG.error("The multiblock '{}' not initialized", multiblockId);
+            throw new IllegalStateException("Multiblock not initialized");
         }
         boolean result = true;
         Map<BlockPos, IMultiblockUnit> parts = getUnits();

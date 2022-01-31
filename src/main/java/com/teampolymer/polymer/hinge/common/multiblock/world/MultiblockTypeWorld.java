@@ -24,6 +24,7 @@ import java.util.UUID;
 
 public class MultiblockTypeWorld extends ForgeRegistryEntry<IMultiblockType> implements IMultiblockType {
     private static final Logger LOG = LogManager.getLogger();
+
     @Override
     public IAssembledMultiblock createMultiblockIn(IArchetypeMultiblock definition, World world, IMultiblockAssembleRule assembleRule) {
 
@@ -37,9 +38,8 @@ public class MultiblockTypeWorld extends ForgeRegistryEntry<IMultiblockType> imp
             definition
         );
 
-        WorldMultiblockSavedData.get(world).addAssembledMultiblock(multiblock);
-        if (!multiblock.initialize()) {
-            multiblock.disassemble(world);
+        boolean success = WorldMultiblockSavedData.get(world).placeNewMultiblock(multiblock);
+        if (!success) {
             return null;
         }
         Collection<ChunkPos> crossedChunks = multiblock.getCrossedChunks();

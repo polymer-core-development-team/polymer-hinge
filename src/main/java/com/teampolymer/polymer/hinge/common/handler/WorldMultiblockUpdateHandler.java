@@ -84,17 +84,25 @@ public class WorldMultiblockUpdateHandler {
                     multiblocks.addAll(it.getContainingMultiblocks());
                 });
         }
+        WorldMultiblockSavedData worldMultiblock = WorldMultiblockSavedData.get(world);
         profiler.popPush("validateMultiblocksInChunk");
-        WorldMultiblockSavedData.get(world).validateMultiblocksInChunk(chunk.getPos(), multiblocks);
+        worldMultiblock.validateMultiblocksInChunk(chunk.getPos(), multiblocks);
         profiler.pop();
+        worldMultiblock.onChunkLoad(chunk.getPos());
+
     }
 
     @SubscribeEvent
     public static void onChunkUnLoad(ChunkEvent.Unload unload) {
         IChunk chunk = unload.getChunk();
+        World world = (World) unload.getWorld();
+        if (world.isClientSide()) {
+            return;
+        }
         if (chunk instanceof ICapabilityProvider) {
             ((ICapabilityProvider) chunk).getCapability(CapabilityChunkMultiblockStorage.MULTIBLOCK_STORAGE)
                 .ifPresent(IChunkMultiblockStorage::invalidate);
         }
+        WorldMultiblockSavedData.get(world).onChunkUnload(chunk.getPos());
     }
 }
